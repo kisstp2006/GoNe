@@ -18,32 +18,65 @@
 
 #include "Player.h"
 
-sprite_t *player_create(const char *ase_file)
+// belső segéd: visszaadja a node-hoz csatolt sprite gyereket
+static sprite_t *player_sprite(const node_t *p)
 {
-    // bindings: {up, down, left, right, action1, action2}
-    sprite_t *p = sprite_new(ase_file,
+    array(obj*)* children = (array(obj*)*)obj_children(p);
+    if (children && array_count(*children) > 1)
+        return (sprite_t *)(*children)[1];
+    return NULL;
+}
+
+node_t *player_create(const char *ase_file)
+{
+    // ---- Node (világ-pozíció) ----
+    node_t *n = obj_new(node_t);
+    obj_setname(n, "PlayerRoot");
+    node_teleport(n, vec3(0, 0, 0));
+    node_scale(n, vec3(1, 1, 1));
+
+    // ---- Sprite (vizuál) ----
+    sprite_t *s = sprite_new(ase_file,
         (int[6]){0, 0, KEY_A, KEY_D, 0, 0});  // csak A/D (balra/jobbra)
+    obj_setname(s, "PlayerSprite");
+    s->pos = vec4(0, 0, 0, 0);
+    s->sca = vec2(0.5f, 0.5f);
 
-    obj_setname(p, "Player");
+    // ---- Hierarchia: sprite a node gyereke ----
+    obj_attach(n, s);
 
-    // Kezdő pozíció és méret (3D világtérben)
-    p->pos = vec4(0, 0, 0, 0);
-    p->sca = vec2(0.5f, 0.5f);
-
-    return p;
+    return n;
 }
 
-void player_tick(sprite_t *p)
+void player_tick(node_t *p)
 {
-    obj_tick(p);
+    if (!p) return;
+
+    // ---- Input: A/D mozgatás a NODE-on keresztül ----
+    float vel_x = (float)(input(KEY_D) - input(KEY_A));
+    if (vel_x != 0.0f) {
+        node_move(p, vec3(vel_x, 0, 0));
+    }
+
+    // ---- Sprite pozíció szinkronizálása a node-ról ----
+    sprite_t *s = player_sprite(p);
+    if (s) {
+        vec3 np = node_position(p);
+        s->pos = vec4(np.x, np.y, np.z, s->pos.w);
+
+        // Sprite animáció (obj_tick kezeli az input + frame váltást)
+        obj_tick(s);
+    }
 }
 
-void player_draw(sprite_t *p)
+void player_draw(node_t *p)
 {
-    obj_draw(p);
+    if (!p) return;
+    sprite_t *s = player_sprite(p);
+    if (s) obj_draw(s);
 }
 
-vec3 player_pos(const sprite_t *p)
+vec3 player_pos(const node_t *p)
 {
-    return p ? p->pos.xyz : vec3(0, 0, 0);
+    return p ? node_position(p) : vec3(0, 0, 0);
 }

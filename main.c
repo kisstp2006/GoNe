@@ -63,8 +63,8 @@ int main(void)
     camera_t cam = camera();
     cam.damping = true;        // smooth követés
 
-    // ---- 3D sprite (billboard, mindig a kamera felé néz) ----
-    sprite_t *player = player_create("Captain Clown Nose.ase");
+    // ---- Játékos (node alapú: node = pozíció, sprite = vizuál) ----
+    node_t *player = player_create("Captain Clown Nose.ase");
 
 
    

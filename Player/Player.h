@@ -21,16 +21,18 @@
 
 #include "engine.h"
 
-// Létrehozza a játékost a megadott .ase fájllal
-sprite_t *player_create(const char *ase_file);
+// Létrehoz egy Player node-ot + csatolt sprite-ot a megadott .ase fájllal.
+// A node tárolja a világ-pozíciót; a sprite a vizuális reprezentáció.
+node_t *player_create(const char *ase_file);
 
-// Tick (input + animáció) — minden frame-ben hívni kell
-void player_tick(sprite_t *p);
+// Tick (input + animáció) — minden frame-ben hívni kell.
+// A/D billentyűkkel mozgatja a node-ot, és szinkronizálja a sprite-ot.
+void player_tick(node_t *p);
 
 // Kirajzolás — minden frame-ben hívni kell
-void player_draw(sprite_t *p);
+void player_draw(node_t *p);
 
-// Visszaadja a játékos pozícióját (csak olvasható)
-vec3 player_pos(const sprite_t *p);
+// Visszaadja a játékos világ-pozícióját (a node transformjából)
+vec3 player_pos(const node_t *p);
 
 #endif
