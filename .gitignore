@@ -1,0 +1,45 @@
+# Bináris / futtatható fájlok
+*.exe
+*.out
+*.app
+*.dll
+*.so
+*.dylib
+
+# Object fájlok
+*.o
+*.obj
+*.lo
+*.la
+*.a
+*.lib
+
+# Debug könyvtár (build output)
+Debug/
+
+# Precompiled headers
+*.gch
+*.pch
+
+# Fordító / linker ideiglenes fájlok
+*.ilk
+*.pdb
+*.idb
+*.exp
+*.manifest
+*.res
+*.tlog/
+
+# Editor / IDE fájlok
+.vs/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Egyéb build artifactok
+*.bak
+*.tmp
+*.temp
