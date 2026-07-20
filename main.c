@@ -20,10 +20,16 @@
 #include "Config/BuildConfig.h"
 #include "Camera/Camera.h"
 #include "Debug/DebugHUD.h"
+#include "Editor/Outliner.h"
 #include "Fonts/Fonts.h"
 #include "Game/GameMode.h"
 #include "Player/Player.h"
 #include "Scripts/Script.h"
+
+
+#if is(win32) // hack to boost exit time. there are no critical systems that need to shutdown properly on Windows,
+#define atexit(...) // however Linux needs proper atexit() to deinitialize 3rd_miniaudio.h; likely OSX as well.
+#endif
 
 // ---- Játék állapot (statikus, hogy az editor_frame callback elérje) ----
 static camera_t  g_cam;
@@ -32,6 +38,7 @@ static node_t   *g_player;
 // ---- Játék logika (PLAY és EDITOR módban is ez fut) ----
 static void game_tick(unsigned frame, float dt, double t)
 {
+    //scripting_init();
     (void)dt;
     (void)t;
 
@@ -41,6 +48,7 @@ static void game_tick(unsigned frame, float dt, double t)
         init_done = 1;
         g_cam = camera_create();
         g_player = player_create("Captain Clown Nose.ase");
+        outliner_watch(g_player);                   // regisztrálás az outlinerbe
     }
 
     if (!g_player) return; // még nincs init
@@ -60,7 +68,6 @@ static void game_tick(unsigned frame, float dt, double t)
 int main(void)
 {
     script_init();
-    scripting_init();
     window_create(75.0, 0);
     window_title("GoNe - Demo");
     fonts_init();
@@ -71,9 +78,10 @@ int main(void)
         gamemode_update();
 
         if (gamemode_is_editing()) {
-            // ---- EDITOR mód: editor UI + gizmo + játék ----
+            // ---- EDITOR mód: editor UI + gizmo + outliner + játék ----
             editor_frame(game_tick);
             editor_gizmos(2);
+            outliner_render();
         } else {
             // ---- PLAY mód: játék közvetlenül ----
             game_tick(1, window_delta(), window_time());

@@ -21,6 +21,7 @@ call tools\tcc.bat ^
     GoNe\main.c ^
     GoNe\Camera\Camera.c ^
     GoNe\Debug\DebugHUD.c ^
+    GoNe\Editor\Outliner.c ^
     GoNe\Fonts\Fonts.c ^
     GoNe\Game\GameMode.c ^
     GoNe\Player\Player.c ^
