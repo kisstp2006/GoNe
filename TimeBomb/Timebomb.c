@@ -1,6 +1,6 @@
 /*
  * GoNe - Timebomb module
- * Copyright (C) 2026  <your name>
+ * Copyright (C) 2026  Kiss Tibor Péter
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,11 +43,11 @@
 #endif
 
 #ifndef GONE_TIMEBOMB_MONTH
-    #define GONE_TIMEBOMB_MONTH 8
+    #define GONE_TIMEBOMB_MONTH 7
 #endif
 
 #ifndef GONE_TIMEBOMB_DAY
-    #define GONE_TIMEBOMB_DAY 31
+    #define GONE_TIMEBOMB_DAY 21
 #endif
 
 static const char* GONE_WEEKDAY_NAMES[7] =

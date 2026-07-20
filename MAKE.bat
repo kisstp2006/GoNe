@@ -19,6 +19,7 @@ call tools\tcc.bat ^
     -Iengine ^
     GoNe\main.c ^
     GoNe\Player\Player.c ^
+    GoNe\Scripts\Script.c ^
     GoNe\TimeBomb\Timebomb.c ^
     engine\engine.c ^
     -o gone.exe ^

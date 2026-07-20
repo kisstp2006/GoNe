@@ -1,6 +1,6 @@
 /*
  * GoNe - <brief description>
- * Copyright (C) 2026  <your name>
+ * Copyright (C) 2026  Kiss Tibor Péter
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
     #include "TimeBomb/Timebomb.h"
 #endif
 #include "Player/Player.h"
+#include "Scripts/Script.h"
 #include <stdio.h>
 #include <time.h>
 
@@ -30,6 +31,7 @@
 int main(void)
 {
     script_init();
+    scripting_init();                                   // Lua/Teal scripting
     window_create(75.0, 0);
     window_title("GoNe - Demo");
 
@@ -64,6 +66,9 @@ int main(void)
     // ---- 3D sprite (billboard, mindig a kamera felé néz) ----
     sprite_t *player = player_create("Captain Clown Nose.ase");
 
+
+   
+
     while (window_swap() && !input(KEY_ESC))
     {
         // ---- SPRITE MOZGATÁS + ANIMÁCIÓ ----
@@ -82,6 +87,9 @@ int main(void)
         {
             // ---- DEBUG GRID (padlórács) ----
             ddraw_grid(0);
+
+           
+
             char datetime_string[32];
             char datetime_message[128];
 
