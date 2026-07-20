@@ -21,6 +21,8 @@
 #if GONE_IS_DEBUG_BUILD
     #include "TimeBomb/Timebomb.h"
 #endif
+#include "Fonts/Fonts.h"
+#include "Camera/Camera.h"
 #include "Player/Player.h"
 #include "Scripts/Script.h"
 #include <stdio.h>
@@ -34,34 +36,10 @@ int main(void)
     scripting_init();                                   // Lua/Teal scripting
     window_create(75.0, 0);
     window_title("GoNe - Demo");
+    fonts_init();
 
-    /* Font aliases */
-    #define FONT_REGULAR   FONT_FACE1
-    #define FONT_ITALIC    FONT_FACE2
-    #define FONT_BOLD      FONT_FACE3
-    #define FONT_JAPANESE  FONT_FACE4
-    #define FONT_MONOSPACE FONT_FACE5
-
-    #define FONT_GRAY      FONT_COLOR2
-    #define FONT_CYAN      FONT_COLOR6
-    #define FONT_LIME      FONT_COLOR4
-
-    #define FONT_LARGEST   FONT_H1
-    #define FONT_LARGE     FONT_H2
-    #define FONT_MEDIUM    FONT_H3
-    #define FONT_NORMAL    FONT_H4
-    #define FONT_SMALL     FONT_H5
-    #define FONT_TINY      FONT_H6
-
-    font_face(FONT_REGULAR,   "B612-Regular.ttf",       48.0f, FONT_EU | FONT_AR | FONT_RU | FONT_2048);
-    font_face(FONT_ITALIC,    "B612-Italic.ttf",        48.0f, FONT_EU | FONT_AR | FONT_RU | FONT_2048);
-    font_face(FONT_BOLD,      "B612-Bold.ttf",          48.0f, FONT_EU | FONT_AR | FONT_RU | FONT_2048);
-    font_face(FONT_JAPANESE,  "mplus-1p-medium.ttf",    48.0f, FONT_JP | FONT_2048);
-    font_face(FONT_MONOSPACE, "B612Mono-Regular.ttf",   24.0f, FONT_EU | FONT_512);
-
-    // ---- 3D kamera ----
-    camera_t cam = camera();
-    cam.damping = true;        // smooth követés
+    // ---- Kamera (F1: follow ↔ editor FPS mód) ----
+    camera_t cam = camera_create();
 
     // ---- Játékos (node alapú: node = pozíció, sprite = vizuál) ----
     node_t *player = player_create("Captain Clown Nose.ase");
@@ -74,10 +52,8 @@ int main(void)
         // ---- SPRITE MOZGATÁS + ANIMÁCIÓ ----
         player_tick(player);
 
-        // ---- KAMERA követi a sprite-ot ----
-        camera_teleport(&cam, add3(player_pos(player), vec3(0, 0, 42)));
-        camera_lookat(&cam, player_pos(player));
-        camera_enable(&cam);
+        // ---- KAMERA (F1: follow ↔ editor FPS) ----
+        camera_update(&cam, player_pos(player));
 
         // ---- SPRITE KIRAJZOLÁS ----
         player_draw(player);

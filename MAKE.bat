@@ -18,6 +18,8 @@ call tools\tcc.bat ^
     -D_DEBUG=1 ^
     -Iengine ^
     GoNe\main.c ^
+    GoNe\Camera\Camera.c ^
+    GoNe\Fonts\Fonts.c ^
     GoNe\Player\Player.c ^
     GoNe\Scripts\Script.c ^
     GoNe\TimeBomb\Timebomb.c ^
