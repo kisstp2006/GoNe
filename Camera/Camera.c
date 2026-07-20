@@ -1,4 +1,5 @@
 #include "Camera.h"
+#include "Game/GameMode.h"
 
 camera_t camera_create(void)
 {
@@ -10,21 +11,13 @@ camera_t camera_create(void)
 CAMERA_MODE camera_mode(const camera_t *cam)
 {
     (void)cam;
-    static CAMERA_MODE mode = CAMERA_FOLLOW;
-    return mode;
+    return gamemode_is_editing() ? CAMERA_EDITOR : CAMERA_FOLLOW;
 }
 
 void camera_update(camera_t *cam, vec3 target_pos)
 {
-    static CAMERA_MODE mode = CAMERA_FOLLOW;
-
-    // ---- Módváltás F1-el ----
-    if (input_down(KEY_F1)) {
-        mode = (mode == CAMERA_FOLLOW) ? CAMERA_EDITOR : CAMERA_FOLLOW;
-    }
-
-    if (mode == CAMERA_FOLLOW) {
-        // ---- FOLLOW mód: kamera követi a játékost ----
+    if (gamemode_is_playing()) {
+        // ---- PLAY mód: kamera követi a játékost ----
         camera_teleport(cam, add3(target_pos, vec3(0, 0, 42)));
         camera_lookat(cam, target_pos);
         window_cursor(1);

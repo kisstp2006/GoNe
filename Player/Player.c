@@ -17,6 +17,7 @@
  */
 
 #include "Player.h"
+#include "Game/GameMode.h"
 
 // belső segéd: visszaadja a node-hoz csatolt sprite gyereket
 static sprite_t *player_sprite(const node_t *p)
@@ -52,10 +53,12 @@ void player_tick(node_t *p)
 {
     if (!p) return;
 
-    // ---- Input: A/D mozgatás a NODE-on keresztül ----
-    float vel_x = (float)(input(KEY_D) - input(KEY_A));
-    if (vel_x != 0.0f) {
-        node_move(p, vec3(vel_x, 0, 0));
+    // ---- Input: A/D mozgatás (csak PLAY módban) ----
+    if (gamemode_is_playing()) {
+        float vel_x = (float)(input(KEY_D) - input(KEY_A));
+        if (vel_x != 0.0f) {
+            node_move(p, vec3(vel_x, 0, 0));
+        }
     }
 
     // ---- Sprite pozíció szinkronizálása a node-ról ----

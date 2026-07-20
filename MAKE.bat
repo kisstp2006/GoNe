@@ -17,9 +17,12 @@ call tools\tcc.bat ^
     -DGONE_DEBUG_BUILD=1 ^
     -D_DEBUG=1 ^
     -Iengine ^
+    -IGoNe ^
     GoNe\main.c ^
     GoNe\Camera\Camera.c ^
+    GoNe\Debug\DebugHUD.c ^
     GoNe\Fonts\Fonts.c ^
+    GoNe\Game\GameMode.c ^
     GoNe\Player\Player.c ^
     GoNe\Scripts\Script.c ^
     GoNe\TimeBomb\Timebomb.c ^

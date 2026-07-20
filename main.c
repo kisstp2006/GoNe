@@ -18,114 +18,62 @@
 
 #include "engine.h"
 #include "Config/BuildConfig.h"
-#if GONE_IS_DEBUG_BUILD
-    #include "TimeBomb/Timebomb.h"
-#endif
-#include "Fonts/Fonts.h"
 #include "Camera/Camera.h"
+#include "Debug/DebugHUD.h"
+#include "Fonts/Fonts.h"
+#include "Game/GameMode.h"
 #include "Player/Player.h"
 #include "Scripts/Script.h"
-#include <stdio.h>
-#include <time.h>
 
-#define SCRIPT(...) #__VA_ARGS__
+// ---- Játék állapot (statikus, hogy az editor_frame callback elérje) ----
+static camera_t  g_cam;
+static node_t   *g_player;
+
+// ---- Játék logika (PLAY és EDITOR módban is ez fut) ----
+static void game_tick(unsigned frame, float dt, double t)
+{
+    (void)frame;
+    (void)dt;
+    (void)t;
+
+    // Inicializálás (első hívásra, frame-től függetlenül)
+    static int init_done = 0;
+    if (!init_done) {
+        init_done = 1;
+        g_cam = camera_create();
+        g_player = player_create("Captain Clown Nose.ase");
+    }
+
+    if (!g_player) return; // még nincs init
+
+    // Tick + kamera + draw
+    player_tick(g_player);
+    camera_update(&g_cam, player_pos(g_player));
+    player_draw(g_player);
+    debug_hud_render(player_pos(g_player));
+}
 
 int main(void)
 {
     script_init();
-    scripting_init();                                   // Lua/Teal scripting
+    scripting_init();
     window_create(75.0, 0);
     window_title("GoNe - Demo");
     fonts_init();
-
-    // ---- Kamera (F1: follow ↔ editor FPS mód) ----
-    camera_t cam = camera_create();
-
-    // ---- Játékos (node alapú: node = pozíció, sprite = vizuál) ----
-    node_t *player = player_create("Captain Clown Nose.ase");
-
-
-   
+    gamemode_init();
 
     while (window_swap() && !input(KEY_ESC))
     {
-        // ---- SPRITE MOZGATÁS + ANIMÁCIÓ ----
-        player_tick(player);
+        gamemode_update();
 
-        // ---- KAMERA (F1: follow ↔ editor FPS) ----
-        camera_update(&cam, player_pos(player));
-
-        // ---- SPRITE KIRAJZOLÁS ----
-        player_draw(player);
-
-        // ---- DEBUG SZÖVEG (csak debug buildben) ----
-        if (GONE_IS_DEBUG_BUILD)
-        {
-            // ---- DEBUG GRID (padlórács) ----
-            ddraw_grid(0);
-
-           
-
-            char datetime_string[32];
-            char datetime_message[128];
-
-            font_print("This is a Debug build.\n");
-            font_print("Build configuration: " GONE_BUILD_NAME "\n");
-
-#if GONE_IS_DEBUG_BUILD
-            if (gone_get_current_datetime_string(datetime_string, sizeof(datetime_string)))
-            {
-                snprintf(datetime_message, sizeof(datetime_message),
-                    "Current date and time: %s\n", datetime_string);
-                font_print(datetime_message);
-            }
-#endif
-
-            // Karakter pozíció kiírása
-            char pos_message[128];
-            vec3 pos = player_pos(player);
-            snprintf(pos_message, sizeof(pos_message),
-                "Player position: X=%.1f  Y=%.1f  Z=%.1f\n",
-                pos.x, pos.y, pos.z);
-            font_print(pos_message);
-
-#if GONE_IS_DEBUG_BUILD
-            // Hátralevő napok számolása (csak ha < 10 nap)
-            {
-                GoneDateTime now;
-                GoneDate expiry = gone_get_timebomb_date();
-
-                if (gone_get_current_datetime(&now)) {
-                    struct tm now_tm = {0};
-                    struct tm expiry_tm = {0};
-
-                    now_tm.tm_year = now.year - 1900;
-                    now_tm.tm_mon  = now.month - 1;
-                    now_tm.tm_mday = now.day;
-
-                    expiry_tm.tm_year = expiry.year - 1900;
-                    expiry_tm.tm_mon  = expiry.month - 1;
-                    expiry_tm.tm_mday = expiry.day;
-
-                    time_t now_t = mktime(&now_tm);
-                    time_t exp_t = mktime(&expiry_tm);
-
-                    if (now_t != (time_t)-1 && exp_t != (time_t)-1) {
-                        int days_left = (int)(difftime(exp_t, now_t) / 86400.0);
-                        if (days_left >= 0 && days_left <= 10) {
-                            char warn[128];
-                            snprintf(warn, sizeof(warn),
-                                "WARNING: Only %d day(s) until this demo expires!\n",
-                                days_left);
-                            font_print(warn);
-                        }
-                    }
-                }
-            }
-#endif
-
+        if (gamemode_is_editing()) {
+            // ---- EDITOR mód: editor UI + gizmo + játék ----
+            editor_frame(game_tick);
+            editor_gizmos(2);
+        } else {
+            // ---- PLAY mód: játék közvetlenül ----
+            game_tick(1, window_delta(), window_time());
         }
-    
     }
 
     return 0;
