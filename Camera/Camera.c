@@ -24,9 +24,14 @@ void camera_update(camera_t *cam, vec3 target_pos)
 
     } else {
         // ---- EDITOR mód: szabad FPS kamera ----
-        bool active = ui_active() || ui_hover() || gizmo_active()
-            ? false
-            : input(MOUSE_L) || input(MOUSE_M) || input(MOUSE_R);
+        // Jobb/középső egérgomb MINDIG aktiválja a kamerát (UI fölött is)
+        bool active = input(MOUSE_R) || input(MOUSE_M);
+
+        // Bal egérgomb csak UI-n kívül
+        if (!active) {
+            active = (!ui_active() && !ui_hover() && !gizmo_active())
+                && input(MOUSE_L);
+        }
 
         window_cursor(!active);
 
@@ -35,7 +40,7 @@ void camera_update(camera_t *cam, vec3 target_pos)
 
             vec2 mouse = scale2(
                 vec2(input_diff(MOUSE_X), -input_diff(MOUSE_Y)),
-                0.2f * active);
+                0.2f);
 
             vec3 wasd = scale3(
                 vec3(input(KEY_D) - input(KEY_A),

@@ -12,6 +12,11 @@ void gamemode_update(void)
 {
     if (input_down(KEY_F1)) {
         g_mode = (g_mode == GAMEMODE_PLAY) ? GAMEMODE_EDITOR : GAMEMODE_PLAY;
+
+        // Editor módban a játék fusson (kamera WASD-hez kell a delta)
+        if (g_mode == GAMEMODE_EDITOR) {
+            window_pause(false);
+        }
     }
 }
 

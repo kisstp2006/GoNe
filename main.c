@@ -32,7 +32,6 @@ static node_t   *g_player;
 // ---- Játék logika (PLAY és EDITOR módban is ez fut) ----
 static void game_tick(unsigned frame, float dt, double t)
 {
-    (void)frame;
     (void)dt;
     (void)t;
 
@@ -45,6 +44,11 @@ static void game_tick(unsigned frame, float dt, double t)
     }
 
     if (!g_player) return; // még nincs init
+
+    // Editor módban ne legyen pause (kamera WASD-hez kell a delta)
+    if (gamemode_is_editing()) {
+        window_pause(false);
+    }
 
     // Tick + kamera + draw
     player_tick(g_player);
